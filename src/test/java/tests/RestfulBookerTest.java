@@ -1,6 +1,10 @@
 package tests;
 
 import io.restassured.RestAssured;
+import io.restassured.http.Cookie;
+import io.restassured.http.Cookies;
+import io.restassured.http.Header;
+import io.restassured.http.Headers;
 import io.restassured.response.Response;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -166,6 +170,55 @@ public class RestfulBookerTest extends BaseTest{
         Response deleteResponse = RestAssured.given().auth().preemptive().basic("admin", "password123")
                 .get("https://restful-booker.herokuapp.com/booking/" + bookingId);
         Assert.assertEquals(deleteResponse.statusCode(), 200);
+
+    }
+
+    @Test(description = "Verify that user can get headers and cookies")
+    public void getHeadersAndCookiesTest(){
+        Response response = RestAssured.given(requestSpec).get("/ping");
+
+        // Get All Headers
+        Headers headers = response.getHeaders();
+        System.out.println("*************** Headers ***********************\n" + headers);
+
+        // Get A Header
+        //   First Way
+        System.out.println("*************************************************************");
+        Header serverHeader1 = headers.get("Server");
+        System.out.println(serverHeader1.getName() + ": " + serverHeader1.getValue());
+        //   Second Way
+        String serverHeader2 = response.getHeader("Server");
+        System.out.println("Server: " + serverHeader2);
+        System.out.println("**************************************************************");
+
+        // Get All Cookies
+        Cookies cookies = response.getDetailedCookies();
+        System.out.println("*************** Cookies ***********************\n" + cookies);
+
+    }
+
+    @Test(description = "Verify that user can set headers and cookies")
+    public void setHeadersAndCookiesTest(){
+        // First Way
+        Header header = new Header("test header name", "test header value");
+        requestSpec.header(header);
+        Cookie cookie = new Cookie.Builder("test cookie name", "test cookie value").build();
+        requestSpec.cookie(cookie);
+
+        // Second Way
+        Response response = RestAssured.given(requestSpec)
+                .cookie("some cookie name", "some cookie value")
+                .header("some header name", "some header value")
+                .log().all()
+                .get("/ping");
+
+        // Get All Headers
+        Headers headers = response.getHeaders();
+        System.out.println("*************** Headers ***********************\n" + headers);
+
+        // Get All Cookies
+        Cookies cookies = response.getDetailedCookies();
+        System.out.println("*************** Cookies ***********************\n" + cookies);
 
     }
 }

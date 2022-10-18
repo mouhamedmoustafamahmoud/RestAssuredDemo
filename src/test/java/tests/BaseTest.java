@@ -7,6 +7,8 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.json.JSONObject;
 import org.testng.annotations.BeforeMethod;
+import serialization.Booking;
+import serialization.BookingDates;
 
 public class BaseTest {
 
@@ -35,6 +37,7 @@ public class BaseTest {
                 .post("https://restful-booker.herokuapp.com/booking");
 
     }
+
 
     protected Response updateBooking(int bookingId, String firstName, String lastName,
                                      int totalPrice, boolean depositPaid, String checkIn, String checkOut, String additionalNeeds) {
